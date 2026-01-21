@@ -55,8 +55,10 @@ public class Enemy : MonoBehaviour
 
     public bool IsDead => isDead;
     public bool IsActive => isActive;
-
+    public event System.Action<int, int> OnHpChanged;
     private Vector3 baseScale;
+
+    public Transform damagePoint;
 
     private void Awake()
     {
@@ -376,6 +378,7 @@ public class Enemy : MonoBehaviour
 
     private void DoDamage()
     {
+        if (isDead) return;
         if (target != null && !target.IsDead &&
             Vector2.Distance(transform.position, target.transform.position) <= attackRange)
         {
@@ -397,10 +400,19 @@ public class Enemy : MonoBehaviour
         if (isDead || !isActive) return;
 
         hp -= amount;
+        hp = Mathf.Clamp(hp, 0, maxHp);
+        DamagePopupSpawner.Instance.ShowDamage(
+            amount,
+            damagePoint.position
+        );
+
+        Debug.Log($"Enemy took {amount} damage → HP {hp}/{maxHp}");
+
+        // 🔥 BÁO UI
+        OnHpChanged?.Invoke(hp, maxHp);
 
         if (hp <= 0)
         {
-            hp = 0;
             Die();
         }
         else
@@ -412,6 +424,8 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+
 
     private void Die()
     {
@@ -522,6 +536,6 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
 
         EnemyInfoUI.Show(this);
-        Character.Instance.SetTargetEnemy(this); // 🎯 SET TARGET CHO CHARACTER
+        Character.Instance.SetTargetEnemy(this);
     }
 }

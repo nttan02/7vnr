@@ -20,6 +20,11 @@ public class LoadingHelper : MonoBehaviour
     private IEnumerator loadSceneCor()
     {
         this.sceneAO = SceneManager.LoadSceneAsync(this.sceneName);
+        if (this.sceneAO == null)
+        {
+            Debug.LogError($"Failed to load scene: {this.sceneName}");
+            yield break;
+        }
         this.sceneAO.allowSceneActivation = false;
         while (!this.sceneAO.isDone)
         {

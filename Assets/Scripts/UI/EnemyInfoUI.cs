@@ -6,67 +6,81 @@ public class EnemyInfoUI : MonoBehaviour
     public Text nameText;
     public Text hpText;
 
+    public Image hpFillImage;
+    private float displayFill;
+    private float targetFill;
+
+    private float displayHp;
+    private float targetHp;
+    private float displayMaxHp;
+    private float smoothSpeed = 10f;
+
     private static EnemyInfoUI instance;
     private Enemy currentEnemy;
 
-    private EnemyData currentEnemyData;
-
-// #if UNITY_EDITOR
-//     private void OnValidate()
-//     {
-//         //  Tự động tắt trong chế độ chỉnh Scene (chưa bấm Play)
-//         // if (!Application.isPlaying && gameObject.activeSelf)
-//         // {
-//         //     gameObject.SetActive(false);
-//         // }
-//     }
-// #endif
-
-    // private void Awake()
-    // {
-    //     instance = this;
-    //     HideInfo();
-    // }
-
-    // private void Start()
-    // {
-    //     //  Khi Play game, bật UI trở lại để nó hoạt động
-    //     gameObject.SetActive(true);
-    //     HideInfo(); // ẩn nội dung chờ click enemy
-    // }
-
     public static void Show(Enemy enemy)
     {
-        if (instance == null) instance = FindObjectOfType<EnemyInfoUI>(includeInactive: true);
+        if (instance == null)
+        {
+            instance = FindObjectOfType<EnemyInfoUI>(includeInactive: true);
+            if (instance == null) return;
+        }
         instance.ShowInfo(enemy);
-    }
-
-    public static void Hide()
-    {
-        if (instance == null) return;
-        instance.HideInfo();
     }
 
     public void ShowInfo(Enemy enemy)
     {
-        currentEnemy = enemy;
-        nameText.text = enemy.data.name;
-        hpText.text = "HP: " + enemy.hp + "/" + enemy.maxHp;
-        gameObject.SetActive(true);
-    }
+        if (currentEnemy != null)
+            currentEnemy.OnHpChanged -= UpdateHp;
 
-    public void HideInfo()
-    {
-        gameObject.SetActive(false);
-        currentEnemy = null;
+        currentEnemy = enemy;
+        if (currentEnemy == null) return;
+
+        currentEnemy.OnHpChanged += UpdateHp;
+
+        nameText.text = enemy.data.name;
+
+        displayHp = enemy.hp;
+        targetHp = enemy.hp;
+        displayMaxHp = enemy.maxHp;
+
+        displayFill = (float)enemy.hp / enemy.maxHp;
+        targetFill = displayFill;
+        hpFillImage.fillAmount = displayFill;
+
+        gameObject.SetActive(true);
     }
 
     private void Update()
     {
-        //  Nếu enemy chết thì ẩn UI
-        // if (currentEnemy != null && currentEnemy.IsDead)
-        // {
-        //     HideInfo();
-        // }
+        if (currentEnemy == null) return;
+
+        if (currentEnemy.IsDead)
+        {
+            HideInfo();
+            return;
+        }
+
+        displayHp = Mathf.Lerp(displayHp, targetHp, Time.deltaTime * smoothSpeed);
+        displayFill = Mathf.Lerp(displayFill, targetFill, Time.deltaTime * smoothSpeed);
+
+        hpText.text = $"HP: {Mathf.CeilToInt(displayHp)}/{displayMaxHp}";
+        hpFillImage.fillAmount = displayFill;
+    }
+
+    private void UpdateHp(int currentHp, int maxHp)
+    {
+        targetHp = currentHp;
+        displayMaxHp = maxHp;
+        targetFill = (float)currentHp / maxHp;
+    }
+
+    public void HideInfo()
+    {
+        if (currentEnemy != null)
+            currentEnemy.OnHpChanged -= UpdateHp;
+
+        currentEnemy = null;
+        gameObject.SetActive(false);
     }
 }

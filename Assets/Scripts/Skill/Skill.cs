@@ -6,7 +6,7 @@ using UnityEngine;
 public class Skill
 {
     public int skillId;
-    public int damage;
+    public int dame;
     public int level;
     public int cooldown;
     public int maxFight;
@@ -19,7 +19,8 @@ public class Skill
     public bool IsCooldown()
     {
         long currentTime = GameManager.GetCurrentMilisecond();
-        Debug.Log(currentTime - lastTimeUseSkill);
-        return (currentTime - lastTimeUseSkill) > cooldown;
+        long timeSinceLastUse = currentTime - lastTimeUseSkill;
+        Debug.Log($"Time since last use: {timeSinceLastUse}ms, Cooldown: {cooldown}ms");
+        return timeSinceLastUse >= cooldown;
     }
 }

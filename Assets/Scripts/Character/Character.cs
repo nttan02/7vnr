@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Spine;
 using Spine.Unity;
 using UnityEngine;
 
@@ -18,29 +19,46 @@ public class Character : Singleton<Character>
     public LayerMask groundLayer;
     public float groundCheckDistance = 0.1f;
     public CapsuleCollider2D boxCollider;
-    public int hp = 100;
+    public int power;
+    public int hp;
+    public int hpMax;
+    public int mp;
+    public int mpMax;
     public Enemy targetEnemy;
     public bool IsDead => hp <= 0;
     public int dir;
     public float horizontalInput;
     public float verticalInput;
     public List<Skill> skills;
+    public event Action OnStatChanged;
+    private int pendingSkillDamage;
+    private Enemy pendingTarget;
+
+    public Transform damagePoint;
 
     protected override void Awake()
     {
         base.Awake();
+
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<CapsuleCollider2D>();
+
+        if (skeletonAnimation != null)
+        {
+            skeletonAnimation.AnimationState.Event += OnSpineEvent;
+        }
+    }
+    private void OnDestroy()
+    {
+        if (skeletonAnimation != null)
+        {
+            skeletonAnimation.AnimationState.Event -= OnSpineEvent;
+        }
     }
     private void Start()
     {
         _currentState = new IdleState(this);
     }
-
-    // private void Update()
-    // {
-
-    // }
 
     public void SetAnimation(string animationName, bool loop = false)
     {
@@ -77,17 +95,60 @@ public class Character : Singleton<Character>
     }
     public void TakeDamage(int dmg)
     {
+        if (IsDead) return;
+
         hp -= dmg;
+
         if (hp <= 0)
         {
-            hp = 100;
-            Debug.Log("Player died!");
+            hp = 0;
+            SetState(new DieState(this));
         }
         else
         {
-            Debug.Log($"Player took {dmg} damage. HP left: {hp}");
+            SetState(new HitState(this));
+        }
+        DamagePopupSpawner.Instance.ShowDamage(
+            dmg,
+            damagePoint.position
+        );
+
+        OnStatChanged?.Invoke();
+    }
+
+
+    public void Attack()
+    {
+        if (targetEnemy == null || targetEnemy.IsDead) return;
+
+        float attackRange = 1.5f;
+
+        float dist = Vector2.Distance(transform.position, targetEnemy.transform.position);
+        if (dist <= attackRange)
+        {
+            targetEnemy.TakeDamage(power);
+            Debug.Log($"Player hit enemy for {power}");
         }
     }
+
+    public void PrepareSkillHit(Enemy target, int damage)
+    {
+        pendingTarget = target;
+        pendingSkillDamage = damage;
+    }
+
+    private void OnSpineEvent(Spine.TrackEntry trackEntry, Spine.Event e)
+    {
+        if (e.Data.Name == "Hit")
+        {
+            if (pendingTarget != null && !pendingTarget.IsDead)
+            {
+                pendingTarget.TakeDamage(pendingSkillDamage);
+            }
+        }
+    }
+
+
     public bool IsGrounded()
     {
         Bounds bounds = boxCollider.bounds;
@@ -108,14 +169,30 @@ public class Character : Singleton<Character>
 
     public void Initialize(CharacterData data)
     {
-        if (data == null) return;
-        this.hp = data.hp;
-        this.moveSpeed = data.moveSpeed;
-        this.skills = data.skills;
-        this.dir = 1;
-        FlipCharacter(this.dir);
+        power = data.level;
+
+        hpMax = data.hpMax;
+        hp = data.hp;
+
+        mpMax = data.mpMax;
+        mp = data.mp;
+
+        moveSpeed = data.moveSpeed;
+
+        skills = new List<Skill>();
+        foreach (int id in data.SkillIds)
+        {
+            Skill skill = SkillManager.Instance.GetSkillById(id);
+            if (skill != null)
+                skills.Add(skill);
+        }
+
+        dir = 1;
+        FlipCharacter(dir);
+
         transform.position = new Vector2(data.x, data.y);
     }
+
     public void FindTagetEnemyInRange(float range)
     {
         Enemy enemy = FindObjectOfType<Enemy>();

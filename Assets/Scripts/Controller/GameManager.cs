@@ -22,6 +22,7 @@ public class GameManager : Singleton<GameManager>
     public Transform enemyCanvas;
     private GameScreen currentScreen;
     private GamePlay gamePlay;
+    private float saveTimer;
 
     protected override void Awake()
     {
@@ -43,20 +44,28 @@ public class GameManager : Singleton<GameManager>
     public void CreateNewCharacter()
     {
         gamePlay ??= new GamePlay(this);
-        CharacterData defaultData = new CharacterData
+        CharacterData defaultData = CharacterSaveSystem.LoadCharacter();
+        if (defaultData == null)
         {
-            hp = 100,
-            moveSpeed = 10f,
-            skills = new List<Skill>()
-            {
-                SkillManager.Instance.GetSkillById(1), 
-                SkillManager.Instance.GetSkillById(11),
-                SkillManager.Instance.GetSkillById(21),
-            },
-            x = 0,
-            y = 0
-        };
+            defaultData = CreateDefaultCharacterData();
+        }
         gamePlay.CreateCharacter(defaultData);
+    }
+    private CharacterData CreateDefaultCharacterData()
+    {
+        return new CharacterData
+        {
+            name = "Player",
+            level = 10000000,
+            hpMax = 100000,
+            hp = 100000,
+            mpMax = 50000,
+            mp = 50000,
+            moveSpeed = 10f,
+            x = 0,
+            y = 0,
+            SkillIds = new List<int> { 1, 2, 3 }
+        };
     }
 
     private void Start()
@@ -71,6 +80,12 @@ public class GameManager : Singleton<GameManager>
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();
+        }
+        saveTimer += Time.deltaTime;
+        if (saveTimer >= 30f)
+        {
+            CharacterSaveSystem.SaveCharacter(Character.Instance);
+            saveTimer = 0f;
         }
     }
 

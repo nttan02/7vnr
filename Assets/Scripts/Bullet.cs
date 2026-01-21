@@ -11,9 +11,9 @@ public class Bullet : MonoBehaviour
     [Header("Arc Settings")]
     public float arcHeight = 2f;
     public float travelDistance = 10f;
-    
-    private float timeAlive = 0f;          
-    private float startTimeOffset = 0f;    
+
+    private float timeAlive = 0f;
+    private float startTimeOffset = 0f;
     private Vector3 startPosition;
     private Vector3 targetPosition;
     private float journeyProgress = 0f;
@@ -22,23 +22,25 @@ public class Bullet : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        
+
         if (rb != null)
         {
             rb.gravityScale = 0f;
             rb.isKinematic = true;
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
     }
 
     public void SetDirectionAndSpeed(Vector3 dir, float spd)
     {
-        if (dir == Vector3.zero)
+        if (dir.sqrMagnitude < 0.01f) // Threshold nhỏ hơn
         {
-            Debug.LogWarning("Bullet nhận direction = ZERO! Tự sửa thành right.");
-            dir = Vector3.right;
+            direction = Vector3.right;
         }
-
-        direction = dir.normalized;
+        else
+        {
+            direction = dir.normalized;
+        }
         speed = spd;
     }
 
@@ -51,12 +53,12 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         timeAlive += Time.deltaTime;
-        
+
         if (timeAlive >= 3f)
         {
             Destroy(gameObject);
         }
-        
+
         if (timeAlive < 0f)
         {
             return;
@@ -68,22 +70,22 @@ public class Bullet : MonoBehaviour
             targetPosition = startPosition + direction * travelDistance;
             isMoving = true;
         }
-        
+
         journeyProgress += (speed / travelDistance) * Time.deltaTime;
-        
+
         if (journeyProgress >= 1f)
         {
             Destroy(gameObject);
             return;
         }
-        
+
         Vector3 linearPosition = Vector3.Lerp(startPosition, targetPosition, journeyProgress);
 
         float arcOffset = -4 * arcHeight * Mathf.Pow(journeyProgress - 0.5f, 2) + arcHeight;
 
         Vector3 newPosition = linearPosition;
         newPosition.y += arcOffset;
-        
+
         if (rb != null)
         {
             rb.MovePosition(newPosition);
@@ -91,6 +93,13 @@ public class Bullet : MonoBehaviour
         else
         {
             transform.position = newPosition;
+        }
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);
         }
     }
 }

@@ -44,13 +44,17 @@ public class GamePlay : GameScreen
         {
             GameObject playerObj = Object.Instantiate(gameManager.playerPrefab);
             character = playerObj.GetComponent<Character>();
+
+            Subscribe(HandlePlayerInput);
+            SubscribeMousePress(HandleMousePressed);
         }
+
         character.Initialize(data);
         gameHub.SetSkillButtons(character.skills);
         CameraFollowBounds.Instance.SetTarget(character.transform);
-        Subscribe(HandlePlayerInput);
-        SubscribeMousePress(HandleMousePressed);
+        CharacterInforUI.Show(character);
     }
+
 
     private void HandlePlayerInput(KeyCode key)
     {
@@ -79,12 +83,7 @@ public class GamePlay : GameScreen
             this.enemyFocus = hitEnemy;
             EnemyInfoUI.Show(enemyFocus);
             var hpBar = gameManager.healthBar;
-            if (hpBar == null)
-            {
-                return;
-            }
-
-            if (hpBar.gameObject == null)
+            if (hpBar == null || hpBar.gameObject == null)
             {
                 return;
             }
@@ -137,21 +136,6 @@ public class GamePlay : GameScreen
         }
     }
 
-    // public void SetPlayerPositionWhenEnterWaypoint(bool isLeft)
-    // {
-    //     MapTransport mapTransport = currentMap.GetComponent<MapTransport>();
-    //     if (mapTransport == null) return;
-    //     if (isLeft)
-    //     {
-    //         character.Teleport(mapTransport.rightTransport.transform.position - new Vector3(0f, -10f, 0f));
-    //     }
-    //     else
-    //     {
-    //         character.Teleport(mapTransport.rightTransport.transform.position + new Vector3(5f, 10f, 0f));
-    //     }
-    //     CameraFollowBounds.Instance.SetEdgeParent(mapTransport.edgeParent.transform);
-    //     CameraFollowBounds.Instance.SnapToTarget();
-    // }
     public void SetPlayerPositionWhenEnterWaypoint(bool isLeft)
     {
         MapTransport mapTransport = currentMap.GetComponent<MapTransport>();

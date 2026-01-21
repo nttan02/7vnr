@@ -17,6 +17,12 @@ public class CloudScroll : MonoBehaviour
     void Update()
     {
         offset.x += scrollSpeed * Time.deltaTime;
+
+        if (offset.x > 1f)
+            offset.x -= 1f;
+        else if (offset.x < 0f)
+            offset.x += 1f;
+
         mat.mainTextureOffset = offset;
     }
 }

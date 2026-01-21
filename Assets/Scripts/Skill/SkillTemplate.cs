@@ -7,9 +7,9 @@ public class SkillTemplate
 {
     public int id;
     public string name;
+    public int damage;
+    public int cooldown;
     public string description;
     public string icon;
     public int maxPoint;
-    public Skill[] skills;
-
 }

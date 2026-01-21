@@ -27,31 +27,36 @@ public class SkillManager : MonoBehaviour
         Instance = this;
         LoadSkillTemplates();
     }
-
+    
     private void LoadSkillTemplates()
     {
-        if (skillDataJson != null)
-        {
-            SkillTemplateWrapper wrapper = JsonUtility.FromJson<SkillTemplateWrapper>(skillDataJson.text);
-            SkillTemplates = new Dictionary<int, SkillTemplate>();
-            Skills = new Dictionary<int, Skill>();
-            foreach (var skillTemplate in wrapper.skillTemplates)
-            {
-                SkillTemplates[skillTemplate.id] = skillTemplate;
-                foreach (var skill in skillTemplate.skills)
-                {
-                    skill.template = skillTemplate;
-                    Skills[skill.skillId] = skill;
-                }
-            }
-        }
-        else
+        if (skillDataJson == null)
         {
             Debug.LogError("Không tìm thấy skillTemplates.json");
+            return;
+        }
+
+        SkillTemplateWrapper wrapper =
+            JsonUtility.FromJson<SkillTemplateWrapper>(skillDataJson.text);
+
+        SkillTemplates = new Dictionary<int, SkillTemplate>();
+        Skills = new Dictionary<int, Skill>();
+
+        foreach (var template in wrapper.skillTemplates)
+        {
+            SkillTemplates[template.id] = template;
+
+            Skill skill = new Skill
+            {
+                skillId = template.id,
+                template = template,
+                dame = template.damage,
+                cooldown = template.cooldown
+            };
+
+            Skills[skill.skillId] = skill;
         }
     }
-
-
 
     public SkillTemplate GetSkillTemplate(int id)
     {
@@ -65,48 +70,57 @@ public class SkillManager : MonoBehaviour
 
     public void UseSkill(int skillId)
     {
-        Skill skill = GetSkillById(skillId);
-        if (skill == null) return;
 
-        // 🔴 KIỂM TRA TARGET
+        Skill skill = Character.Instance.skills.Find(s => s.skillId == skillId);
+
+        if (skill == null)
+        {
+            return;
+        }
+
         Enemy target = Character.Instance.targetEnemy;
-
-        if (target == null || target.IsDead)
+        if (target == null)
+        {
             return;
-
-        // 🔴 KIỂM TRA COOLDOWN
-        if (!skill.IsCooldown())
+        }
+        if (target.IsDead)
+        {
             return;
+        }
+
+        long currentTime = GameManager.GetCurrentMilisecond();
+        long timeSinceLastUse = currentTime - skill.lastTimeUseSkill;
+
+        if (timeSinceLastUse < skill.cooldown)
+        {
+            long timeLeft = skill.cooldown - timeSinceLastUse;
+            return;
+        }
 
         string effectName = EffectManager.GetEffectCharAttackObjById(skill.template.id);
 
-        // EFFECT & ANIM
         EffectCharAttackObj.AddEffect(effectName, Character.Instance.transform.position, Character.Instance);
         Character.Instance.SetAnimation(effectName);
 
-        skill.lastTimeUseSkill = GameManager.GetCurrentMilisecond();
+        skill.lastTimeUseSkill = currentTime;
+        Character.Instance.PrepareSkillHit(target, skill.dame);
+        Character.Instance.SetAnimation(effectName, false);
 
-        // (Tùy bạn muốn thêm damage hay không)
-        target.TakeDamage(skill.damage);
+        target.TakeDamage(skill.dame);
     }
 
 
     public Skill GetSkillById(int skillId)
     {
-        // if (Skills.TryGetValue(skillId, out Skill skill))
-        // {
-        //     return skill;
-        // }
-        // Debug.LogWarning($"Không tìm thấy kỹ năng với ID {skillId}");
-        // return null;
         if (Skills.TryGetValue(skillId, out Skill skill))
         {
             Skill newSkill = new Skill
             {
                 skillId = skill.skillId,
-                cooldown = skill.cooldown,
-                damage = skill.damage,
-                template = skill.template
+                cooldown = skill.template.cooldown,
+                dame = skill.template.damage,
+                template = skill.template,
+                lastTimeUseSkill = 0
             };
             return newSkill;
         }

@@ -33,8 +33,12 @@ public class EffectCharAttackObj : MonoBehaviour
             parent.ResetState();
         };
     }
+
     void Update()
     {
-        skeAnim.Skeleton.ScaleX = character.dir;
+        if (character != null)
+        {
+            skeAnim.Skeleton.ScaleX = character.dir;
+        }
     }
 }

@@ -18,17 +18,15 @@ public class HealthBar : MonoBehaviour
 
     void LateUpdate()
     {
-        if (target == null)
+        if (target == null || target.IsDead)
         {
-            gameObject.SetActive(false);
+            ClearTarget();
             return;
         }
 
-        Vector3 pos = target.transform.position + offset;
-        transform.position = pos;
-
-        UpdateFill(target.hp, target.maxHp);
+        transform.position = target.transform.position + offset;
     }
+
 
     public void UpdateFill(long currentHp, long hpMax)
     {
@@ -36,22 +34,40 @@ public class HealthBar : MonoBehaviour
         ratePercent = -((value - 1) * min);
         bar.transform.localPosition = new Vector2(ratePercent, 0);
     }
+    private void OnHpChanged(int currentHp, int maxHp)
+    {
+        UpdateFill(currentHp, maxHp);
+    }
 
     public void SetTarget(Enemy enemy)
     {
+        if (target != null)
+            target.OnHpChanged -= OnHpChanged;
+
         target = enemy;
+
+        if (target == null) return;
+
+        target.OnHpChanged += OnHpChanged;
 
         transform.SetParent(null);
 
         offset = new Vector3(0, enemy.GetTopCollider(), 0);
         transform.position = enemy.transform.position + offset;
 
+        gameObject.SetActive(true);
+
         UpdateFill(enemy.hp, enemy.maxHp);
     }
 
+
     public void ClearTarget()
     {
+        if (target != null)
+            target.OnHpChanged -= OnHpChanged;
+
         target = null;
         gameObject.SetActive(false);
     }
+
 }

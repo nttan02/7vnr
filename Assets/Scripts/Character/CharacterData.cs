@@ -10,10 +10,13 @@ public class CharacterData
     public int level;
     public int hpMax;
     public int hp;
-    public int attack;
-    public int defense;
+    public int mpMax;
+    public int mp;
+    // public int attack;
+    // public int defense;
     public float moveSpeed;
     public int x;
     public int y;
-    public List<Skill> skills;
+    public List<int> SkillIds;
+    // public List<Skill> skills;
 }

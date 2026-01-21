@@ -3,6 +3,7 @@
         {
             "id": 1,
             "name": "Chiêu đấm",
+            "damage": 10000,
             "description": "Đòn đánh cơ bản, gây %d sát thương cho mục tiêu",
             "icon": "3_1",
             "maxPoint": 10,
@@ -10,8 +11,8 @@
                 {
                     "skillId": 1,
                     "level": 1,
-                    "damage": 100,
-                    "cooldown": 400,
+                    "dame": 100,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 10,
                     "dx": 20,
@@ -20,8 +21,8 @@
                 {
                     "skillId": 2,
                     "level": 2,
-                    "damage": 120,
-                    "cooldown": 380,
+                    "dame": 120,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 20,
                     "dx": 20,
@@ -30,8 +31,8 @@
                 {
                     "skillId": 3,
                     "level": 3,
-                    "damage": 140,
-                    "cooldown": 360,
+                    "dame": 140,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 30,
                     "dx": 20,
@@ -40,8 +41,8 @@
                 {
                     "skillId": 4,
                     "level": 4,
-                    "damage": 160,
-                    "cooldown": 340,
+                    "dame": 160,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 40,
                     "dx": 20,
@@ -50,8 +51,8 @@
                 {
                     "skillId": 5,
                     "level": 5,
-                    "damage": 180,
-                    "cooldown": 320,
+                    "dame": 180,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 50,
                     "dx": 20,
@@ -60,8 +61,8 @@
                 {
                     "skillId": 6,
                     "level": 6,
-                    "damage": 200,
-                    "cooldown": 300,
+                    "dame": 200,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 60,
                     "dx": 20,
@@ -70,8 +71,8 @@
                 {
                     "skillId": 7,
                     "level": 7,
-                    "damage": 220,
-                    "cooldown": 280,
+                    "dame": 220,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 70,
                     "dx": 20,
@@ -80,8 +81,8 @@
                 {
                     "skillId": 8,
                     "level": 8,
-                    "damage": 240,
-                    "cooldown": 260,
+                    "dame": 240,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 80,
                     "dx": 20,
@@ -90,8 +91,8 @@
                 {
                     "skillId": 9,
                     "level": 9,
-                    "damage": 260,
-                    "cooldown": 240,
+                    "dame": 260,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 90,
                     "dx": 20,
@@ -100,8 +101,8 @@
                 {
                     "skillId": 10,
                     "level": 10,
-                    "damage": 300,
-                    "cooldown": 200,
+                    "dame": 300,
+                    "cooldown": 0,
                     "maxFight": 1,
                     "manaCost": 100,
                     "dx": 20,
@@ -112,6 +113,7 @@
         {
             "id": 2,
             "name": "KI Blast",
+            "damage": 10000,
             "description": "Trưởng lực tấn công gây %d sát thương cho mục tiêu",
             "icon": "3_2",
             "maxPoint": 10,
@@ -119,7 +121,7 @@
                 {
                     "skillId": 11,
                     "level": 1,
-                    "damage": 270,
+                    "dame": 270,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 100,
@@ -129,7 +131,7 @@
                 {
                     "skillId": 12,
                     "level": 2,
-                    "damage": 120,
+                    "dame": 120,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 105,
@@ -139,7 +141,7 @@
                 {
                     "skillId": 13,
                     "level": 3,
-                    "damage": 140,
+                    "dame": 140,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 110,
@@ -149,7 +151,7 @@
                 {
                     "skillId": 14,
                     "level": 4,
-                    "damage": 160,
+                    "dame": 160,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 120,
@@ -159,7 +161,7 @@
                 {
                     "skillId": 15,
                     "level": 5,
-                    "damage": 180,
+                    "dame": 180,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 130,
@@ -169,7 +171,7 @@
                 {
                     "skillId": 16,
                     "level": 6,
-                    "damage": 200,
+                    "dame": 200,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 140,
@@ -179,7 +181,7 @@
                 {
                     "skillId": 17,
                     "level": 7,
-                    "damage": 220,
+                    "dame": 220,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 150,
@@ -189,7 +191,7 @@
                 {
                     "skillId": 18,
                     "level": 8,
-                    "damage": 240,
+                    "dame": 240,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 160,
@@ -199,7 +201,7 @@
                 {
                     "skillId": 19,
                     "level": 9,
-                    "damage": 260,
+                    "dame": 260,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 170,
@@ -209,7 +211,7 @@
                 {
                     "skillId": 20,
                     "level": 10,
-                    "damage": 300,
+                    "dame": 300,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 180,
@@ -221,6 +223,7 @@
         {
             "id": 3,
             "name": "KI Blast",
+            "damage": 10000,
             "description": "Trưởng lực tấn công gây %d sát thương cho mục tiêu",
             "icon": "spell10",
             "maxPoint": 10,
@@ -228,7 +231,7 @@
                 {
                     "skillId": 21,
                     "level": 1,
-                    "damage": 270,
+                    "dame": 270,
                     "cooldown": 5000,
                     "maxFight": 1,
                     "manaCost": 100,
